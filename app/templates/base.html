@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Twitter Tracker{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>🐦 Twitter Tracker</h1>
+    <p class="subtitle">Instancia autoalojada, gratuita y de código abierto para seguir cuentas de Twitter/X.</p>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>Sondeo automático cada {{ poll_interval }} minutos · <a href="https://github.com/OscarSalgado/Twitter-tracker" target="_blank" rel="noopener">código fuente</a></p>
+  </footer>
+</body>
+</html>
