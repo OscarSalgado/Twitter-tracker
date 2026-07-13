@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="panel">
+  <h2>Cuentas seguidas</h2>
+  <form action="/accounts" method="post" class="add-form">
+    <input type="text" name="username" placeholder="usuario (sin @)" required>
+    <button type="submit">Seguir</button>
+  </form>
+  <form action="/check-now" method="post" class="inline-form">
+    <button type="submit" class="secondary">Comprobar ahora</button>
+  </form>
+
+  {% if accounts %}
+  <table class="accounts-table">
+    <thead>
+      <tr>
+        <th>Cuenta</th>
+        <th>Último chequeo</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for account in accounts %}
+      <tr>
+        <td><a href="https://x.com/{{ account.username }}" target="_blank" rel="noopener">@{{ account.username }}</a></td>
+        <td>{{ account.last_checked_at.strftime('%Y-%m-%d %H:%M') if account.last_checked_at else "pendiente" }}</td>
+        <td>
+          {% if account.last_error %}
+            <span class="status error" title="{{ account.last_error }}">error</span>
+          {% else %}
+            <span class="status ok">ok</span>
+          {% endif %}
+        </td>
+        <td>
+          <form action="/accounts/{{ account.id }}/delete" method="post">
+            <button type="submit" class="danger">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Todavía no sigues ninguna cuenta. Añade una arriba para empezar.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>Tuits recientes</h2>
+  {% if recent_tweets %}
+  <ul class="tweet-list">
+    {% for account, tweet in recent_tweets %}
+    <li class="tweet">
+      <div class="tweet-header">
+        <strong>@{{ account.username }}</strong>
+        <span class="tweet-date">{{ tweet.tweet_created_at.strftime('%Y-%m-%d %H:%M') if tweet.tweet_created_at else "" }}</span>
+      </div>
+      <p class="tweet-content">{{ tweet.content }}</p>
+      {% if tweet.url %}<a href="{{ tweet.url }}" target="_blank" rel="noopener">Ver en X</a>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">Todavía no se han recopilado tuits. Espera al siguiente sondeo o pulsa "Comprobar ahora".</p>
+  {% endif %}
+</section>
+
+{% endblock %}
