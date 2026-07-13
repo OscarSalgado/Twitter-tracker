@@ -91,6 +91,31 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
    ejemplo con `https://api.telegram.org/bot<token>/getUpdates`.
 3. Rellena `TELEGRAM_CHAT_ID` en `.env` y reinicia la instancia.
 
+## Desarrollo con OpenSpec
+
+Este proyecto usa [OpenSpec](https://github.com/Fission-AI/OpenSpec) para
+desarrollo dirigido por especificación: el comportamiento vigente de cada
+capacidad vive como Markdown versionado en `openspec/specs/`, y todo cambio
+de comportamiento se propone primero como spec antes de tocar código.
+
+- `openspec/specs/` — especificación actual de cada capacidad
+  (`account-tracking`, `tweet-polling`, `notifications`, `web-dashboard`).
+- `openspec/changes/` — propuestas de cambio en curso (se archivan en
+  `openspec/changes/archive/` una vez implementadas).
+- `openspec/config.yaml` — contexto del proyecto y convenciones para la IA.
+
+Para trabajar con OpenSpec necesitas la CLI (Node.js 20.19+):
+
+```bash
+npx @fission-ai/openspec@latest list --specs   # ver capacidades existentes
+npx @fission-ai/openspec@latest validate --specs --strict
+```
+
+Con Claude Code, los comandos `/opsx:explore`, `/opsx:propose`, `/opsx:apply`
+y `/opsx:archive` (instalados en `.claude/commands/opsx/`) guían el flujo:
+explorar el problema → proponer spec + diseño + tareas → implementar →
+archivar el cambio fusionando la spec delta en `openspec/specs/`.
+
 ## Licencia
 
 MIT — ver [LICENSE](LICENSE).

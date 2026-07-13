@@ -1,0 +1,24 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+context: |
+  Twitter Tracker: self-hosted, free, open-source (MIT) instance to follow
+  public Twitter/X accounts without the paid X API.
+  Tech stack: Python 3.11, FastAPI, SQLAlchemy + SQLite, APScheduler,
+  Jinja2 + plain CSS (no JS framework), twikit for reading tweets, httpx
+  for the optional Telegram notifier. Shipped as a single Docker container
+  (Dockerfile + docker-compose.yml).
+  Conventions: no code comments unless explaining a non-obvious "why";
+  keep the UI server-rendered and dependency-free; SQLite is the only
+  datastore, no external services besides Telegram (optional) and X.
+  Commit messages in English, user-facing docs (README) in Spanish.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+rules:
+  proposal:
+    - Call out any risk of violating X's Terms of Service or rate limits
+  tasks:
+    - Include a manual verification step run via uvicorn/docker before
+      marking implementation done, since there's no test suite yet
