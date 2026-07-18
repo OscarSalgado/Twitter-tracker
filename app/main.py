@@ -92,6 +92,19 @@ async def check_now(_: None = Depends(require_auth)):
     return RedirectResponse(url="/", status_code=303)
 
 
+@app.post("/tweets/{tweet_id}/topic")
+def update_tweet_topic(tweet_id: int, topic: str = Form(...), _: None = Depends(require_auth)):
+    session = get_session()
+    try:
+        tweet = session.query(Tweet).filter_by(id=tweet_id).first()
+        if tweet:
+            tweet.topic = topic
+            session.commit()
+    finally:
+        session.close()
+    return RedirectResponse(url="/", status_code=303)
+
+
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}

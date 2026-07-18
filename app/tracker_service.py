@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timezone
 
 from app import config
+from app.classifier import classify_tweet
 from app.database import get_session
 from app.models import Account, Tweet
 from app.notifier import notify_new_tweet
@@ -64,12 +65,15 @@ async def poll_account(session, account: Account) -> int:
     for item in fetched:
         if item["tweet_id"] in existing_ids:
             continue
+        topic, confidence = classify_tweet(item["content"])
         tweet = Tweet(
             tweet_id=item["tweet_id"],
             account_id=account.id,
             content=item["content"],
             url=item["url"],
             tweet_created_at=item["tweet_created_at"],
+            topic=topic,
+            topic_confidence=confidence,
         )
         session.add(tweet)
         new_count += 1
