@@ -147,6 +147,44 @@ def test_check_now_triggers_poll_and_redirects(client):
     mock_poll.assert_awaited_once()
 
 
+def test_update_tweet_topic_updates_and_redirects(client):
+    session = get_session()
+    account = Account(username="karl", display_name="Karl", twitter_user_id="10")
+    session.add(account)
+    session.commit()
+    tweet = Tweet(tweet_id="t200", account_id=account.id, content="tech stuff", url="https://x.com/karl/status/t200")
+    session.add(tweet)
+    session.commit()
+    tweet_id = tweet.id
+    session.close()
+
+    response = client.post(
+        f"/tweets/{tweet_id}/topic",
+        data={"topic": "technology"},
+        auth=("admin", "test-password"),
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 303
+    session = get_session()
+    try:
+        stored = session.get(Tweet, tweet_id)
+        assert stored.topic == "technology"
+    finally:
+        session.close()
+
+
+def test_update_tweet_topic_nonexistent_tweet_is_noop(client):
+    response = client.post(
+        "/tweets/999999/topic",
+        data={"topic": "politics"},
+        auth=("admin", "test-password"),
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 303
+
+
 def test_lifespan_logs_and_continues_when_twitter_login_fails():
     with patch("app.main.scraper") as mock_scraper, patch("app.main.start_scheduler") as mock_start, patch(
         "app.main.stop_scheduler"

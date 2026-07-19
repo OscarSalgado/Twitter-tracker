@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 from app import config
 from app.database import get_session, init_db
-from app.models import Account
+from app.models import Account, Tweet
 from app.scheduler import start_scheduler, stop_scheduler
 from app.scraper import scraper
 from app.tracker_service import add_account, poll_all_accounts, remove_account
