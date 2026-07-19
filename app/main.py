@@ -19,16 +19,21 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("tracker.main")
 
 templates = Jinja2Templates(directory="app/templates")
-security = HTTPBasic()
+security = HTTPBasic(auto_error=False)
 
 
-def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> None:
+def require_auth(credentials: HTTPBasicCredentials | None = Depends(security)) -> None:
     if not config.BASIC_AUTH_PASSWORD:
         return
+    unauthorized = HTTPException(
+        status_code=401, detail="Credenciales inválidas", headers={"WWW-Authenticate": "Basic"}
+    )
+    if credentials is None:
+        raise unauthorized
     user_ok = secrets.compare_digest(credentials.username, config.BASIC_AUTH_USER)
     pass_ok = secrets.compare_digest(credentials.password, config.BASIC_AUTH_PASSWORD)
     if not (user_ok and pass_ok):
-        raise HTTPException(status_code=401, detail="Credenciales inválidas", headers={"WWW-Authenticate": "Basic"})
+        raise unauthorized
 
 
 @asynccontextmanager
@@ -58,9 +63,9 @@ def dashboard(request: Request, _: None = Depends(require_auth)):
                 recent_tweets.append((account, tweet))
         recent_tweets.sort(key=lambda pair: pair[1].tweet_created_at or pair[1].fetched_at, reverse=True)
         return templates.TemplateResponse(
+            request,
             "index.html",
             {
-                "request": request,
                 "accounts": accounts,
                 "recent_tweets": recent_tweets[:50],
                 "poll_interval": config.POLL_INTERVAL_MINUTES,

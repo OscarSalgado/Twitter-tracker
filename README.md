@@ -99,7 +99,8 @@ capacidad vive como Markdown versionado en `openspec/specs/`, y todo cambio
 de comportamiento se propone primero como spec antes de tocar código.
 
 - `openspec/specs/` — especificación actual de cada capacidad
-  (`account-tracking`, `tweet-polling`, `notifications`, `web-dashboard`).
+  (`account-tracking`, `tweet-polling`, `notifications`, `web-dashboard`,
+  `dependency-updates`, `test-coverage`).
 - `openspec/changes/` — propuestas de cambio en curso (se archivan en
   `openspec/changes/archive/` una vez implementadas).
 - `openspec/config.yaml` — contexto del proyecto y convenciones para la IA.
@@ -115,6 +116,34 @@ Con Claude Code, los comandos `/opsx:explore`, `/opsx:propose`, `/opsx:apply`
 y `/opsx:archive` (instalados en `.claude/commands/opsx/`) guían el flujo:
 explorar el problema → proponer spec + diseño + tareas → implementar →
 archivar el cambio fusionando la spec delta en `openspec/specs/`.
+
+## Actualización de dependencias
+
+Las dependencias de `requirements.txt` se mantienen al día mediante
+[Dependabot](https://docs.github.com/en/code-security/dependabot) (ver
+`.github/dependabot.yml`): cada semana abre automáticamente una pull request
+por cada dependencia con una versión más reciente disponible (paquetes de
+Python y, ahora que existe `.github/workflows/`, también las Actions
+usadas en CI). Esas PRs no se fusionan solas — pasan por la misma revisión
+que cualquier otro cambio antes de mergear.
+
+## Tests y cobertura
+
+El proyecto exige **100% de cobertura de líneas** en `app/`, medida con
+`pytest-cov` y forzada tanto en local como en CI
+(`.github/workflows/tests.yml`): si la cobertura baja de 100%, `pytest`
+falla aunque todos los tests individuales pasen.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt   # incluye requirements.txt
+pytest                                # corre los tests + reporte de cobertura
+```
+
+Los tests nunca hacen llamadas reales a Twitter/X ni a Telegram: `twikit` y
+`httpx` se simulan (mocks) en `tests/`, así que la suite corre sin
+credenciales ni acceso a red.
 
 ## Licencia
 

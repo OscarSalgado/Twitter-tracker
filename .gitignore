@@ -1,8 +1,10 @@
 __pycache__/
 *.pyc
-.venv/
+.venv*/
 venv/
 .env
+.coverage
+.pytest_cache/
 data/*.db
 data/*.db-journal
 data/cookies.json
