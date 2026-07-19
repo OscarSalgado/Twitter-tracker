@@ -2,9 +2,10 @@ import logging
 from datetime import datetime, timezone
 
 from app import config
+from app.classifier import classify_tweet
 from app.database import get_session
 from app.models import Account, Tweet
-from app.notifier import notify_new_tweet
+from app.notifications import send_telegram_notification
 from app.scraper import scraper
 
 logger = logging.getLogger("tracker.service")
@@ -64,17 +65,19 @@ async def poll_account(session, account: Account) -> int:
     for item in fetched:
         if item["tweet_id"] in existing_ids:
             continue
+        topic, confidence = classify_tweet(item["content"])
         tweet = Tweet(
             tweet_id=item["tweet_id"],
             account_id=account.id,
             content=item["content"],
             url=item["url"],
             tweet_created_at=item["tweet_created_at"],
+            topic=topic,
+            topic_confidence=confidence,
         )
         session.add(tweet)
         new_count += 1
-        await notify_new_tweet(account.username, item["content"], item["url"])
-        tweet.notified = True
+        tweet.notified = await send_telegram_notification(account.username, item["content"], item["url"])
 
     account.last_error = ""
     account.last_checked_at = datetime.now(timezone.utc)
