@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% if not twitter_logged_in %}
+<div class="banner warning">
+  No hay sesión activa en Twitter/X: el seguimiento de cuentas y tuits está detenido.
+  {% if twitter_login_error %}<span class="banner-detail">({{ twitter_login_error }})</span>{% endif %}
+</div>
+{% endif %}
+
 <section class="panel">
   <h2>Cuentas seguidas</h2>
   <form action="/accounts" method="post" class="add-form">

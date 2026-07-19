@@ -28,33 +28,49 @@ class TwitterScraper:
     def __init__(self) -> None:
         self._client = Client(language="en-US")
         self._logged_in = False
+        self._last_login_error: str | None = None
+
+    @property
+    def is_logged_in(self) -> bool:
+        return self._logged_in
+
+    @property
+    def last_login_error(self) -> str | None:
+        return self._last_login_error
 
     async def login(self) -> None:
-        cookies_path = Path(config.COOKIES_FILE)
-        if cookies_path.exists():
-            try:
-                self._client.load_cookies(str(cookies_path))
-                self._logged_in = True
-                logger.info("Sesión de Twitter restaurada desde cookies guardadas.")
-                return
-            except Exception:
-                logger.warning("No se pudieron reutilizar las cookies guardadas, se hará login de nuevo.")
+        try:
+            cookies_path = Path(config.COOKIES_FILE)
+            if cookies_path.exists():
+                try:
+                    self._client.load_cookies(str(cookies_path))
+                    self._logged_in = True
+                    self._last_login_error = None
+                    logger.info("Sesión de Twitter restaurada desde cookies guardadas.")
+                    return
+                except Exception:
+                    logger.warning("No se pudieron reutilizar las cookies guardadas, se hará login de nuevo.")
 
-        if not (config.TWITTER_USERNAME and config.TWITTER_PASSWORD):
-            raise RuntimeError(
-                "Faltan credenciales de Twitter. Configura TWITTER_USERNAME, TWITTER_EMAIL y "
-                "TWITTER_PASSWORD en el archivo .env."
+            if not (config.TWITTER_USERNAME and config.TWITTER_PASSWORD):
+                raise RuntimeError(
+                    "Faltan credenciales de Twitter. Configura TWITTER_USERNAME, TWITTER_EMAIL y "
+                    "TWITTER_PASSWORD en el archivo .env."
+                )
+
+            await self._client.login(
+                auth_info_1=config.TWITTER_USERNAME,
+                auth_info_2=config.TWITTER_EMAIL or None,
+                password=config.TWITTER_PASSWORD,
             )
-
-        await self._client.login(
-            auth_info_1=config.TWITTER_USERNAME,
-            auth_info_2=config.TWITTER_EMAIL or None,
-            password=config.TWITTER_PASSWORD,
-        )
-        cookies_path.parent.mkdir(parents=True, exist_ok=True)
-        self._client.save_cookies(str(cookies_path))
-        self._logged_in = True
-        logger.info("Login en Twitter completado y cookies guardadas.")
+            cookies_path.parent.mkdir(parents=True, exist_ok=True)
+            self._client.save_cookies(str(cookies_path))
+            self._logged_in = True
+            self._last_login_error = None
+            logger.info("Login en Twitter completado y cookies guardadas.")
+        except Exception as exc:
+            self._logged_in = False
+            self._last_login_error = str(exc)
+            raise
 
     async def resolve_user(self, username: str):
         return await self._client.get_user_by_screen_name(username.lstrip("@"))

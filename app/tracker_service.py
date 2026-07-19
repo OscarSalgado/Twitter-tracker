@@ -83,6 +83,13 @@ async def poll_account(session, account: Account) -> int:
 
 
 async def poll_all_accounts() -> int:
+    if not scraper.is_logged_in:
+        try:
+            await scraper.login()
+        except Exception:
+            logger.exception("Reintento de login en Twitter fallido, se omite este sondeo.")
+            return 0
+
     session = get_session()
     total_new = 0
     try:

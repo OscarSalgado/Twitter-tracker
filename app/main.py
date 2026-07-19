@@ -69,6 +69,8 @@ def dashboard(request: Request, _: None = Depends(require_auth)):
                 "accounts": accounts,
                 "recent_tweets": recent_tweets[:50],
                 "poll_interval": config.POLL_INTERVAL_MINUTES,
+                "twitter_logged_in": scraper.is_logged_in,
+                "twitter_login_error": scraper.last_login_error,
             },
         )
     finally:
@@ -99,4 +101,4 @@ async def check_now(_: None = Depends(require_auth)):
 
 @app.get("/healthz")
 def healthz():
-    return {"status": "ok"}
+    return {"status": "ok", "twitter_login": "ok" if scraper.is_logged_in else "error"}

@@ -86,6 +86,16 @@ a { color: var(--accent); text-decoration: none; }
 
 .empty { color: var(--muted); }
 
+.banner.warning {
+  background: rgba(244, 33, 46, 0.12);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+}
+.banner-detail { color: var(--muted); }
+
 footer {
   text-align: center;
   color: var(--muted);
