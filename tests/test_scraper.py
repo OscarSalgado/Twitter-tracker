@@ -63,6 +63,18 @@ async def test_login_success_without_existing_cookies(scraper, monkeypatch):
     assert scraper._logged_in is True
 
 
+async def test_login_failure_marks_scraper_logged_out_with_error(scraper, monkeypatch):
+    monkeypatch.setattr(config, "TWITTER_USERNAME", "")
+    monkeypatch.setattr(config, "TWITTER_PASSWORD", "")
+
+    with pytest.raises(RuntimeError):
+        await scraper.login()
+
+    assert scraper.is_logged_in is False
+    assert scraper.last_login_error is not None
+    assert "credenciales" in scraper.last_login_error.lower()
+
+
 async def test_resolve_user_strips_at_and_delegates(scraper):
     scraper._client.get_user_by_screen_name = AsyncMock(return_value="user-obj")
 

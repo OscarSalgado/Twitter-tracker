@@ -148,7 +148,35 @@ async def test_poll_all_accounts_aggregates_across_accounts():
     async def fake_poll_account(_session, _account):
         return 1
 
-    with patch("app.tracker_service.poll_account", new=AsyncMock(side_effect=fake_poll_account)):
+    with patch("app.tracker_service.scraper") as mock_scraper, patch(
+        "app.tracker_service.poll_account", new=AsyncMock(side_effect=fake_poll_account)
+    ):
+        mock_scraper.is_logged_in = True
         total = await tracker_service.poll_all_accounts()
 
     assert total == 2
+
+
+async def test_poll_all_accounts_logs_in_when_not_already_logged_in():
+    with patch("app.tracker_service.scraper") as mock_scraper, patch(
+        "app.tracker_service.poll_account", new=AsyncMock(return_value=0)
+    ):
+        mock_scraper.is_logged_in = False
+        mock_scraper.login = AsyncMock()
+        total = await tracker_service.poll_all_accounts()
+
+    mock_scraper.login.assert_awaited_once()
+    assert total == 0
+
+
+async def test_poll_all_accounts_skips_poll_when_login_retry_fails():
+    with patch("app.tracker_service.scraper") as mock_scraper, patch(
+        "app.tracker_service.poll_account", new=AsyncMock(return_value=1)
+    ) as mock_poll_account:
+        mock_scraper.is_logged_in = False
+        mock_scraper.login = AsyncMock(side_effect=RuntimeError("no credentials"))
+        total = await tracker_service.poll_all_accounts()
+
+    mock_scraper.login.assert_awaited_once()
+    mock_poll_account.assert_not_awaited()
+    assert total == 0

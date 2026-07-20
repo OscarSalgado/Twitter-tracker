@@ -29,7 +29,16 @@ def test_healthz_is_unauthenticated(client):
     response = client.get("/healthz")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {"status": "ok", "twitter_login": "ok"}
+
+
+def test_healthz_reports_twitter_login_error(client, mock_lifespan_dependencies):
+    mock_lifespan_dependencies.is_logged_in = False
+
+    response = client.get("/healthz")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok", "twitter_login": "error"}
 
 
 def test_dashboard_requires_auth_without_credentials(client):
