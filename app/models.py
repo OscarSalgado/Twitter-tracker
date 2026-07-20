@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -38,5 +38,7 @@ class Tweet(Base):
     tweet_created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     notified: Mapped[bool] = mapped_column(default=False)
+    topic: Mapped[str] = mapped_column(String(32), default="other", index=True)
+    topic_confidence: Mapped[float] = mapped_column(Float, default=0.0)
 
     account: Mapped["Account"] = relationship(back_populates="tweets")

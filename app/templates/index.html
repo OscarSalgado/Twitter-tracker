@@ -56,17 +56,54 @@
 
 <section class="panel">
   <h2>Tuits recientes</h2>
+
   {% if recent_tweets %}
+  <div class="topic-filter">
+    <form method="get" id="topic-form">
+      <select name="topic" id="topic-select" onchange="document.getElementById('topic-form').submit()">
+        <option value="">Todos los temas</option>
+        <option value="technology" {% if request.query_params.get('topic') == 'technology' %}selected{% endif %}>Tecnología</option>
+        <option value="politics" {% if request.query_params.get('topic') == 'politics' %}selected{% endif %}>Política</option>
+        <option value="business" {% if request.query_params.get('topic') == 'business' %}selected{% endif %}>Negocios</option>
+        <option value="sports" {% if request.query_params.get('topic') == 'sports' %}selected{% endif %}>Deportes</option>
+        <option value="entertainment" {% if request.query_params.get('topic') == 'entertainment' %}selected{% endif %}>Entretenimiento</option>
+        <option value="science" {% if request.query_params.get('topic') == 'science' %}selected{% endif %}>Ciencia</option>
+        <option value="health" {% if request.query_params.get('topic') == 'health' %}selected{% endif %}>Salud</option>
+        <option value="social" {% if request.query_params.get('topic') == 'social' %}selected{% endif %}>Social</option>
+        <option value="crypto" {% if request.query_params.get('topic') == 'crypto' %}selected{% endif %}>Crypto</option>
+        <option value="other" {% if request.query_params.get('topic') == 'other' %}selected{% endif %}>Otro</option>
+      </select>
+    </form>
+  </div>
+
   <ul class="tweet-list">
     {% for account, tweet in recent_tweets %}
+    {% set selected_topic = request.query_params.get('topic', '') %}
+    {% if not selected_topic or tweet.topic == selected_topic %}
     <li class="tweet">
       <div class="tweet-header">
         <strong>@{{ account.username }}</strong>
         <span class="tweet-date">{{ tweet.tweet_created_at.strftime('%Y-%m-%d %H:%M') if tweet.tweet_created_at else "" }}</span>
+        <form action="/tweets/{{ tweet.id }}/topic" method="post" class="topic-edit-form">
+          <select name="topic" class="topic-edit-select">
+            <option value="technology" {% if tweet.topic == 'technology' %}selected{% endif %}>Technology</option>
+            <option value="politics" {% if tweet.topic == 'politics' %}selected{% endif %}>Política</option>
+            <option value="business" {% if tweet.topic == 'business' %}selected{% endif %}>Negocios</option>
+            <option value="sports" {% if tweet.topic == 'sports' %}selected{% endif %}>Deportes</option>
+            <option value="entertainment" {% if tweet.topic == 'entertainment' %}selected{% endif %}>Entretenimiento</option>
+            <option value="science" {% if tweet.topic == 'science' %}selected{% endif %}>Ciencia</option>
+            <option value="health" {% if tweet.topic == 'health' %}selected{% endif %}>Salud</option>
+            <option value="social" {% if tweet.topic == 'social' %}selected{% endif %}>Social</option>
+            <option value="crypto" {% if tweet.topic == 'crypto' %}selected{% endif %}>Crypto</option>
+            <option value="other" {% if tweet.topic == 'other' %}selected{% endif %}>Otro</option>
+          </select>
+          <button type="submit" class="topic-save-btn">✓</button>
+        </form>
       </div>
       <p class="tweet-content">{{ tweet.content }}</p>
       {% if tweet.url %}<a href="{{ tweet.url }}" target="_blank" rel="noopener">Ver en X</a>{% endif %}
     </li>
+    {% endif %}
     {% endfor %}
   </ul>
   {% else %}

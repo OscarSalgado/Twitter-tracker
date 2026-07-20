@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 from app import config
 from app.database import get_session, init_db
-from app.models import Account
+from app.models import Account, Tweet
 from app.scheduler import start_scheduler, stop_scheduler
 from app.scraper import scraper
 from app.tracker_service import add_account, poll_all_accounts, remove_account
@@ -96,6 +96,19 @@ def delete_account(account_id: int, _: None = Depends(require_auth)):
 @app.post("/check-now")
 async def check_now(_: None = Depends(require_auth)):
     await poll_all_accounts()
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/tweets/{tweet_id}/topic")
+def update_tweet_topic(tweet_id: int, topic: str = Form(...), _: None = Depends(require_auth)):
+    session = get_session()
+    try:
+        tweet = session.query(Tweet).filter_by(id=tweet_id).first()
+        if tweet:
+            tweet.topic = topic
+            session.commit()
+    finally:
+        session.close()
     return RedirectResponse(url="/", status_code=303)
 
 
