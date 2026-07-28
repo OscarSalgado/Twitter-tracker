@@ -1,36 +1,128 @@
 {
   "themes": [
     {
+      "name": "Starlink",
+      "keywords": [
+        "starlink",
+        "satellite",
+        "connectivity",
+        "orbit",
+        "launch",
+        "SpaceX"
+      ]
+    },
+    {
       "name": "Tecnología",
-      "keywords": ["tech", "tecnología", "software", "ai", "machine learning", "code", "coding", "python", "javascript", "desarrollo", "programación"]
+      "keywords": [
+        "tech",
+        "tecnología",
+        "software",
+        "ai",
+        "machine learning",
+        "code",
+        "coding",
+        "python",
+        "javascript",
+        "desarrollo",
+        "programación"
+      ]
     },
     {
       "name": "Negocios",
-      "keywords": ["business", "startups", "emprendimiento", "empresa", "mercado", "inversión", "capital", "bolsa", "trading"]
+      "keywords": [
+        "business",
+        "startups",
+        "emprendimiento",
+        "empresa",
+        "mercado",
+        "inversión",
+        "capital",
+        "bolsa",
+        "trading"
+      ]
     },
     {
       "name": "Ciencia",
-      "keywords": ["science", "ciencia", "investigación", "research", "study", "scientists", "physics", "biology", "chemistry"]
+      "keywords": [
+        "science",
+        "ciencia",
+        "investigación",
+        "research",
+        "study",
+        "scientists",
+        "physics",
+        "biology",
+        "chemistry"
+      ]
     },
     {
       "name": "Deportes",
-      "keywords": ["sports", "deporte", "fútbol", "football", "tennis", "basketball", "games", "équipo", "liga"]
+      "keywords": [
+        "sports",
+        "deporte",
+        "fútbol",
+        "football",
+        "tennis",
+        "basketball",
+        "games",
+        "équipo",
+        "liga"
+      ]
     },
     {
       "name": "Política",
-      "keywords": ["política", "politics", "government", "election", "congreso", "parlamento", "voto", "candidato"]
+      "keywords": [
+        "política",
+        "politics",
+        "government",
+        "election",
+        "congreso",
+        "parlamento",
+        "voto",
+        "candidato"
+      ]
     },
     {
       "name": "Cultura",
-      "keywords": ["cultura", "arte", "música", "cine", "películas", "libros", "literatura", "artista", "museum"]
+      "keywords": [
+        "cultura",
+        "arte",
+        "música",
+        "cine",
+        "películas",
+        "libros",
+        "literatura",
+        "artista",
+        "museum"
+      ]
     },
     {
       "name": "Salud",
-      "keywords": ["salud", "health", "medicina", "doctor", "hospital", "enfermedad", "tratamiento", "wellness", "exercise"]
+      "keywords": [
+        "salud",
+        "health",
+        "medicina",
+        "doctor",
+        "hospital",
+        "enfermedad",
+        "tratamiento",
+        "wellness",
+        "exercise"
+      ]
     },
     {
       "name": "Viajes",
-      "keywords": ["viaje", "travel", "tourism", "trip", "destination", "hotel", "turismo", "explorer", "adventure"]
+      "keywords": [
+        "viaje",
+        "travel",
+        "tourism",
+        "trip",
+        "destination",
+        "hotel",
+        "turismo",
+        "explorer",
+        "adventure"
+      ]
     }
   ]
 }
