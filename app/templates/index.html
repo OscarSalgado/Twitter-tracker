@@ -14,9 +14,12 @@
     <input type="text" name="username" placeholder="usuario (sin @)" required>
     <button type="submit">Seguir</button>
   </form>
-  <form action="/check-now" method="post" class="inline-form">
-    <button type="submit" class="secondary">Comprobar ahora</button>
-  </form>
+  <div class="button-group">
+    <form action="/check-now" method="post" class="inline-form">
+      <button type="submit" class="secondary">Comprobar ahora</button>
+    </form>
+    <a href="/book/download" class="button secondary">📖 Descargar libro</a>
+  </div>
 
   {% if accounts %}
   <table class="accounts-table">

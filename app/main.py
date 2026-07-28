@@ -3,12 +3,13 @@ import secrets
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app import config
+from app.book_generator import generate_book
 from app.database import get_session, init_db
 from app.models import Account
 from app.scheduler import start_scheduler, stop_scheduler
@@ -102,3 +103,33 @@ async def check_now(_: None = Depends(require_auth)):
 @app.get("/healthz")
 def healthz():
     return {"status": "ok", "twitter_login": "ok" if scraper.is_logged_in else "error"}
+
+
+@app.get("/book/download")
+def download_book(_: None = Depends(require_auth)):
+    output_file = "tweets_book.md"
+    generate_book(output_file)
+    return FileResponse(
+        path=output_file,
+        filename=output_file,
+        media_type="text/markdown; charset=utf-8",
+    )
+
+
+@app.get("/book/themes")
+def get_themes(_: None = Depends(require_auth)):
+    import json
+
+    with open("app/themes.json") as f:
+        return json.load(f)
+
+
+@app.post("/book/themes")
+async def update_themes(request: Request, _: None = Depends(require_auth)):
+    import json
+
+    themes_data = await request.json()
+    with open("app/themes.json", "w") as f:
+        json.dump(themes_data, f, indent=2, ensure_ascii=False)
+    logger.info("Themes updated")
+    return {"status": "ok"}

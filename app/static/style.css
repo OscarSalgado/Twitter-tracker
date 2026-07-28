@@ -50,6 +50,28 @@ main {
   margin-bottom: 1rem;
 }
 
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+a.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #2f3336;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.button.secondary { background: #2f3336; }
+a.button:hover { background: #3a4145; }
+
 input[type="text"] {
   flex: 1;
   padding: 0.5rem 0.75rem;
