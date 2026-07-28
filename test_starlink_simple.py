@@ -30,81 +30,94 @@ class SimpleThemeClassifier:
 
 
 def create_mock_tweets():
-    """Crea 8 tweets simulados de @elonmusk sobre Starlink"""
+    """
+    Crea 8 tweets SIMULADOS basados en hechos reales de Starlink.
+
+    NOTA: Estos son tweets de PRUEBA para validar el sistema.
+    Para tweets REALES, usa test_real_tweets.py con credenciales válidas.
+    """
     now = datetime.now(timezone.utc)
 
     tweets = [
         {
             "id": 1,
-            "content": "Starlink is now providing global connectivity. Over 50 million users worldwide!",
+            "content": "[SIMULADO] Starlink now serves 8 million users globally, with expansion continuing in rural areas",
             "url": "https://x.com/elonmusk/status/1",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=0, hours=2),
             "fetched_at": now - timedelta(days=0, hours=1),
+            "note": "Basado en datos reales de usuarios de Starlink"
         },
         {
             "id": 2,
-            "content": "Starlink v2 satellites have more than 8x capacity than v1.5. Performance is incredible.",
+            "content": "[SIMULADO] Starlink Gen 2 satellites with advanced phased array antennas. Next generation capacity ready",
             "url": "https://x.com/elonmusk/status/2",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=1, hours=5),
             "fetched_at": now - timedelta(days=1, hours=4),
+            "note": "Basado en anuncios técnicos de SpaceX"
         },
         {
             "id": 3,
-            "content": "Just launched 40 more Starlink satellites to polar orbit. Coverage expanding fast!",
+            "content": "[SIMULADO] Launched batch of Starlink Gen 2 satellites to low Earth orbit for constellation expansion",
             "url": "https://x.com/elonmusk/status/3",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=2, hours=10),
             "fetched_at": now - timedelta(days=2, hours=9),
+            "note": "Los lanzamientos de Starlink son reales y públicos"
         },
         {
             "id": 4,
-            "content": "Starlink Mini is shipping to early access users. First product under $600!",
+            "content": "[SIMULADO] Starlink Mini hardware is compact and portable. Great for mobile users and remote work",
             "url": "https://x.com/elonmusk/status/4",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=3, hours=3),
             "fetched_at": now - timedelta(days=3, hours=2),
+            "note": "Starlink Mini es un producto real de SpaceX"
         },
         {
             "id": 5,
-            "content": "Starlink Direct to Cell enabled. Can text from anywhere on Earth now.",
+            "content": "[SIMULADO] Starlink Direct to Cell capability enables texting from anywhere without line of sight",
             "url": "https://x.com/elonmusk/status/5",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=4, hours=7),
             "fetched_at": now - timedelta(days=4, hours=6),
+            "note": "Starlink Direct to Cell es una capacidad anunciada"
         },
         {
             "id": 6,
-            "content": "SpaceX Starship will carry Starlink to Mars. Interplanetary internet coming soon!",
+            "content": "[SIMULADO] SpaceX Starship will deliver Starlink payload to higher orbits. Space internet evolution",
             "url": "https://x.com/elonmusk/status/6",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=5, hours=1),
             "fetched_at": now - timedelta(days=5, hours=0),
+            "note": "Starship y Starlink son proyectos reales de SpaceX"
         },
         {
             "id": 7,
-            "content": "Starlink latency down to 20ms in most areas. Gaming and video calls work perfectly.",
+            "content": "[SIMULADO] Starlink latency improved to sub-40ms in most coverage areas. Gaming viable globally now",
             "url": "https://x.com/elonmusk/status/7",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=6, hours=4),
             "fetched_at": now - timedelta(days=6, hours=3),
+            "note": "La latencia mejorada de Starlink está documentada"
         },
         {
             "id": 8,
-            "content": "Disaster response: Starlink providing emergency connectivity to affected areas.",
+            "content": "[SIMULADO] Starlink providing critical connectivity during natural disasters. Infrastructure resilience",
             "url": "https://x.com/elonmusk/status/8",
             "author": "elonmusk",
             "display_name": "Elon Musk",
             "created_at": now - timedelta(days=7, hours=6),
             "fetched_at": now - timedelta(days=7, hours=5),
+            "note": "Starlink ha ayudado realmente en desastres"
         },
     ]
 
