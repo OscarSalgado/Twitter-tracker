@@ -6,9 +6,9 @@ revisa periódicamente si han publicado tuits nuevos, los guarda en un
 panel web y (opcionalmente) te avisa por Telegram.
 
 No usa la API oficial de pago de X. En su lugar utiliza
-[`twikit`](https://github.com/d60/twikit) (MIT), una librería open source que
-inicia sesión como una cuenta normal para leer contenido público, igual que
-haría un navegador.
+[`scweet`](https://github.com/Altimis/Scweet) (MIT), una librería open source que
+simula un navegador para leer contenido público de Twitter/X sin necesidad de
+credenciales o login.
 
 ## ⚠️ Aviso importante
 
@@ -37,7 +37,7 @@ haría un navegador.
 ```
 app/
   main.py            FastAPI: rutas del panel web y API mínima
-  scraper.py          Wrapper sobre twikit (login, lectura de tuits)
+  scraper.py          Wrapper sobre scweet (scraping sin login, lectura de tuits)
   tracker_service.py  Lógica de añadir cuentas y sondear tuits nuevos
   scheduler.py         Tarea periódica (APScheduler)
   notifier.py          Notificaciones por Telegram
@@ -141,7 +141,7 @@ pip install -r requirements-dev.txt   # incluye requirements.txt
 pytest                                # corre los tests + reporte de cobertura
 ```
 
-Los tests nunca hacen llamadas reales a Twitter/X ni a Telegram: `twikit` y
+Los tests nunca hacen llamadas reales a Twitter/X ni a Telegram: `scweet` y
 `httpx` se simulan (mocks) en `tests/`, así que la suite corre sin
 credenciales ni acceso a red.
 

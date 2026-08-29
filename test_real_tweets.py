@@ -20,103 +20,102 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
-def check_credentials():
-    """Verifica que las credenciales estén configuradas"""
-    username = os.getenv("TWITTER_USERNAME", "").strip()
-    email = os.getenv("TWITTER_EMAIL", "").strip()
-    password = os.getenv("TWITTER_PASSWORD", "").strip()
-
+def check_environment():
+    """Verifica que el ambiente esté configurado"""
     print("=" * 70)
-    print("🔑 VERIFICACIÓN DE CREDENCIALES")
+    print("🔧 VERIFICACIÓN DE AMBIENTE")
     print("=" * 70)
 
-    if not username:
-        print("\n❌ TWITTER_USERNAME no configurado en .env")
-        print("   Edita .env y establece:")
-        print("   TWITTER_USERNAME=tu_usuario_secundario")
+    print("\n✓ scweet NO requiere credenciales")
+    print("  (scraping público de Twitter sin login)")
+
+    try:
+        from scweet import scrap
+        print("\n✓ scweet está instalado")
+    except ImportError:
+        print("\n❌ scweet no está instalado")
+        print("   Instala con: pip install scweet")
         return False
 
-    if not email:
-        print("\n❌ TWITTER_EMAIL no configurado en .env")
-        print("   Edita .env y establece:")
-        print("   TWITTER_EMAIL=tu_email@example.com")
+    try:
+        import selenium
+        print("✓ selenium está instalado")
+    except ImportError:
+        print("\n⚠️  selenium no está instalado")
+        print("   Instala con: pip install selenium")
+        print("   (requerido para scweet)")
         return False
 
-    if not password:
-        print("\n❌ TWITTER_PASSWORD no configurado en .env")
-        print("   Edita .env y establece:")
-        print("   TWITTER_PASSWORD=tu_contraseña")
+    try:
+        import pandas
+        print("✓ pandas está instalado")
+    except ImportError:
+        print("\n⚠️  pandas no está instalado")
+        print("   Instala con: pip install pandas")
         return False
 
-    print("\n✓ Credenciales configuradas:")
-    print(f"  - Usuario: {username}")
-    print(f"  - Email: {email[:10]}***")
-    print(f"  - Contraseña: {'*' * len(password)}")
-
+    print("\n✓ Ambiente verificado correctamente")
     return True
 
 
 async def fetch_real_tweets():
-    """Descarga tweets reales de @elonmusk"""
+    """Descarga tweets reales de @elonmusk usando scweet"""
     print("\n" + "=" * 70)
     print("🐦 DESCARGANDO TWEETS REALES DE @elonmusk")
     print("=" * 70)
 
     try:
-        from twikit import Client
+        from scweet import scrap
     except ImportError:
-        print("\n❌ twikit no está instalado")
-        print("   Instala con: pip install twikit")
+        print("\n❌ scweet no está instalado")
+        print("   Instala con: pip install scweet")
         return None
 
-    username = os.getenv("TWITTER_USERNAME")
-    email = os.getenv("TWITTER_EMAIL")
-    password = os.getenv("TWITTER_PASSWORD")
-
     try:
-        client = Client()
-
-        print("\n🔐 Autenticando en Twitter...")
-        await client.login(
-            auth_info_1=username,
-            auth_info_2=email,
-            password=password,
-        )
-        print("✓ Autenticación exitosa")
-
         print("\n📥 Buscando tweets de @elonmusk sobre Starlink...")
-        tweets = await client.search_tweets(
-            query="from:elonmusk starlink",
-            count=20,
+        print("   (esto puede tomar 1-2 minutos)")
+
+        # scweet scrapes sin necesidad de login
+        tweets_df = scrap(
+            username="elonmusk",
+            tweets_count=20,
+            save_images=False,
+            resume=False,
         )
 
-        if not tweets:
+        if tweets_df is None or tweets_df.empty:
             print("⚠️  No se encontraron tweets")
             return []
 
-        print(f"✓ Se encontraron {len(tweets)} tweets")
+        print(f"✓ Se encontraron {len(tweets_df)} tweets")
 
         result = []
-        for tweet in tweets:
+        for _, row in tweets_df.iterrows():
+            # Filtrar solo tweets sobre Starlink
+            text = str(row.get("text", "")).lower()
+            if "starlink" not in text and "satellite" not in text:
+                continue
+
             result.append({
-                "id": tweet.id,
-                "content": tweet.text,
+                "id": str(row.get("tweet_id", row.get("id", ""))),
+                "content": str(row.get("text", "")),
                 "author": "elonmusk",
-                "display_name": tweet.user.name if hasattr(tweet, "user") else "Elon Musk",
-                "url": f"https://x.com/elonmusk/status/{tweet.id}",
-                "created_at": tweet.created_at if hasattr(tweet, "created_at") else None,
-                "verified": True,  # Marca como verificado
+                "display_name": "Elon Musk",
+                "url": f"https://x.com/elonmusk/status/{row.get('tweet_id', row.get('id', ''))}",
+                "created_at": row.get("created_at"),
+                "verified": True,
             })
 
+        print(f"✓ {len(result)} tweets sobre Starlink encontrados")
         return result
 
     except Exception as e:
-        print(f"\n❌ Error al conectar con Twitter: {e}")
+        print(f"\n❌ Error al descargar tweets: {e}")
         print("\nPosibles causas:")
-        print("  1. Credenciales incorrectas")
-        print("  2. Cuenta bloqueada/suspendida")
-        print("  3. Rate limit de Twitter")
-        print("  4. Problema de conexión")
+        print("  1. X/Twitter está bloqueando el scraping (temporal)")
+        print("  2. Problema de conexión a Internet")
+        print("  3. Selenium/WebDriver no configurado correctamente")
+        print("  4. Problema con scweet o dependencias")
         return None
 
 
@@ -160,33 +159,30 @@ async def main():
     print("║" + " " * 68 + "║")
     print("╚" + "=" * 68 + "╝")
 
-    # Step 1: Verificar credenciales
-    if not check_credentials():
+    # Step 1: Verificar ambiente
+    if not check_environment():
         print("\n" + "=" * 70)
-        print("⚠️  CONFIGURACIÓN NECESARIA")
+        print("⚠️  INSTALACIÓN NECESARIA")
         print("=" * 70)
         print("""
-Para ejecutar este test con tweets reales, necesitas:
+Para ejecutar este test con tweets reales, necesitas instalar:
 
-1. Crear una CUENTA SECUNDARIA en X/Twitter
-   (nunca uses tu cuenta principal)
+1. Instalar dependencias:
+   pip install scweet selenium pandas
 
-2. Configurar el archivo .env:
-   cp .env.example .env
-
-3. Editar .env con:
-   TWITTER_USERNAME=tu_usuario_secundario
-   TWITTER_EMAIL=tu_email@example.com
-   TWITTER_PASSWORD=tu_contraseña
-
-4. Luego ejecutar:
+2. Ejecutar:
    python3 test_real_tweets.py
 
-⚠️  ADVERTENCIA:
-   - Usa una CUENTA SECUNDARIA
-   - X puede detectar automatización
-   - Sé responsable y respeta los Términos de Servicio
-   - Aumenta POLL_INTERVAL_MINUTES a 15+ minutos
+✅ VENTAJAS DE SCWEET:
+   - NO requiere credenciales de Twitter
+   - Scraping público (sin login)
+   - Simula un navegador real
+   - Funciona con tweets públicos
+
+⚠️  NOTAS:
+   - El primer run puede tomar 1-2 minutos
+   - X/Twitter puede bloquear scraping temporalmente
+   - Usa esto responsablemente y respeta ToS
         """)
         return
 
@@ -202,11 +198,16 @@ Para ejecutar este test con tweets reales, necesitas:
         print("=" * 70)
         print("""
 Próximos pasos:
-1. Revisar tweets_reales_elonmusk_starlink.json
+1. Revisar real_tweets_elonmusk_starlink.json
 2. Iniciar Docker: docker compose up -d
 3. Panel web: http://localhost:8000
 4. Añadir @elonmusk como cuenta a seguir
 5. Descargar libro: Botón "📖 Descargar libro"
+
+El sistema ahora usa scweet para scraping:
+✓ Sin credenciales necesarias
+✓ Sin login requerido
+✓ Tweets públicos accesibles
         """)
 
 
