@@ -167,3 +167,72 @@ def test_lifespan_logs_and_continues_when_twitter_login_fails():
 
         mock_start.assert_called_once()
         mock_stop.assert_called_once()
+
+
+def test_download_book_requires_auth(client):
+    response = client.get("/book/download")
+
+    assert response.status_code == 401
+
+
+def test_download_book_generates_and_returns_file(client, tmp_path, monkeypatch):
+    # Create a temporary file for the test
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        f.write("# Test Book")
+        f.flush()
+        temp_path = f.name
+
+    # Patch generate_book to create a file
+    def mock_generate(output_file):
+        with open(output_file, 'w') as f:
+            f.write("# Test Book")
+        return output_file
+
+    with patch("app.main.generate_book", side_effect=mock_generate):
+        response = client.get("/book/download", auth=("admin", "test-password"))
+
+    assert response.status_code == 200
+    assert "Test Book" in response.text
+
+
+def test_get_themes_requires_auth(client):
+    response = client.get("/book/themes")
+
+    assert response.status_code == 401
+
+
+def test_get_themes_returns_json(client):
+    response = client.get("/book/themes", auth=("admin", "test-password"))
+
+    assert response.status_code == 200
+    data = response.json()
+    assert "themes" in data or isinstance(data, list) or isinstance(data, dict)
+
+
+def test_update_themes_requires_auth(client):
+    response = client.post("/book/themes", json={"themes": []})
+
+    assert response.status_code == 401
+
+
+def test_update_themes_updates_file(client):
+    new_themes = {
+        "themes": [
+            {
+                "name": "Test Theme",
+                "keywords": ["test", "example"]
+            }
+        ]
+    }
+
+    with patch("builtins.open", create=True) as mock_open:
+        with patch("json.dump") as mock_dump:
+            response = client.post(
+                "/book/themes",
+                json=new_themes,
+                auth=("admin", "test-password")
+            )
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}

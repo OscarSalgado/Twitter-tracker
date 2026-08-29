@@ -1,5 +1,12 @@
 import os
+import sys
 import tempfile
+from unittest.mock import MagicMock
+
+# Mock scweet before any app imports (must be first)
+scweet_mock = MagicMock()
+scweet_mock.scrap = MagicMock()  # Ensure scrap function is available
+sys.modules["scweet"] = scweet_mock
 
 _tmp_dir = tempfile.mkdtemp(prefix="twitter-tracker-tests-")
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp_dir}/test.db"

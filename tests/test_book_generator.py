@@ -158,8 +158,8 @@ class TestBookGenerator:
         assert "# Recopilación de Tweets" in markdown
         assert "## Tecnología" in markdown
         assert "## Sin clasificar" in markdown
-        assert "Total de tweets: 2" in markdown
-        assert "Total de cuentas seguidas: 2" in markdown
+        assert "**Total de tweets**: 2" in markdown
+        assert "**Total de cuentas seguidas**: 2" in markdown
         assert "Tweet 1" in markdown
         assert "Tweet 2" in markdown
 
@@ -175,3 +175,30 @@ def test_generate_book_function():
         assert result == "test_book.md"
         mock_generator_class.assert_called_once()
         mock_generator.generate.assert_called_once_with("test_book.md")
+
+
+def test_theme_classifier_handles_missing_themes_file():
+    classifier = ThemeClassifier("nonexistent/path/themes.json")
+
+    result = classifier.classify_tweet("test content")
+
+    assert result is None
+    assert classifier.themes == []
+
+
+def test_format_tweet_without_created_at_uses_fetched_at():
+    generator = BookGenerator()
+
+    tweet = {
+        "content": "Test tweet",
+        "author": "testuser",
+        "display_name": "Test User",
+        "url": "https://x.com/testuser/status/123",
+        "created_at": None,
+        "fetched_at": datetime(2024, 1, 15, 10, 30, tzinfo=timezone.utc),
+    }
+    lines = generator._format_tweet(tweet)
+    text = "\n".join(lines)
+
+    assert "Recopilado" in text
+    assert "15/01/2024" in text
